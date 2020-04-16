@@ -1,14 +1,19 @@
 import { Component } from 'react';
 import React from 'react';
+import { ApplicationState } from '../store';
+import * as UserStore from '../store/User'
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
-interface Account {
-  username: string
-}
+type UserProps = UserStore.UserState & typeof UserStore.actionCreators 
 
-export default class Dashboard extends Component<Account, any> {
+class Dashboard extends Component<UserProps> {
 
+  componentDidMount() {
+    console.log(this.props.loggedIn);
+  }
   getChart = () => {
-      return [
+    return [
       {
         "ID": 37498,
         "name": "The Railroad",
@@ -32,11 +37,16 @@ export default class Dashboard extends Component<Account, any> {
   render() {
     return (
       <div>
-        <p>Welcome, { this.props.username }!</p>
+        <p>Welcome, {this.props.name}!</p>
 
         <p>Check out this lovely data!</p>
-        <pre>{JSON.stringify(this.getChart(), null, 2) }</pre>
+        <pre>{JSON.stringify(this.getChart(), null, 2)}</pre>
       </div>
     )
   }
 }
+
+export default connect(
+  (state: ApplicationState) => state.user, // Selects which state properties are merged into the component's props
+  UserStore.actionCreators // Selects which action creators are merged into the component's props
+)(Dashboard as any);

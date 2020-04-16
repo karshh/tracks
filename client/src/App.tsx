@@ -5,39 +5,31 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Home from './components/Home';
+import Login from './components/Login';
+import * as UserStore from './store/User'
+import { ApplicationState } from './store';
+import { connect } from 'react-redux';
+import { PrivateRoute } from './components/PrivateRoute'
 
-const fakeAuth = {
-  isAuthenticated: false,
-  authenticate(cb: any) {
-    this.isAuthenticated = true
-    setTimeout(cb, 100) // fake async
-  },
-  signout(cb: any) {
-    this.isAuthenticated = false
-    setTimeout(cb, 100) // fake async
+
+class App extends Component<UserStore.UserState> {
+
+  render() {
+    return (
+      <div>
+        <NavBar />
+        <Switch>
+          <Route path="/" exact><Redirect to="/home" /></Route>
+          <Route path="/login" component={Login} />
+          <PrivateRoute path="/dashboard" component={Dashboard} isLoggedIn={this.props.loggedIn} />
+          <PrivateRoute path="/home" component={Home} isLoggedIn={this.props.loggedIn} />
+        </Switch>
+      </div>
+    );
   }
 }
 
-const PrivateRoute = (data: any) => (
-  <Route data render={(props: any) => 
-    ( fakeAuth.isAuthenticated === true ? <Component {...props} /> : <Redirect to='/login' /> )} />
-)
-
-
-function App() {
-  const username = "nym";
-  return (
-    <div>
-        <NavBar />
-        <Switch>
-          <Route path="/" exact><Redirect to="/home"/></Route>
-          <Route path="/dashboard">
-              <Dashboard username={username}></Dashboard>
-          </Route>
-          <Route path="/home" component={Home} />
-        </Switch>
-    </div>
-  );
-}
-
-export default App;
+export default connect(
+  (state: ApplicationState) => state.user, // Selects which state properties are merged into the component's props
+  UserStore.actionCreators // Selects which action creators are merged into the component's props
+)(App as any);
