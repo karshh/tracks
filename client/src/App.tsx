@@ -21,8 +21,8 @@ class App extends Component<UserStore.UserState> {
         <Switch>
           <Route path="/" exact><Redirect to="/home" /></Route>
           <Route path="/login" component={Login} />
-          <PrivateRoute path="/dashboard" component={Dashboard} isLoggedIn={this.props.loggedIn} />
-          <PrivateRoute path="/home" component={Home} isLoggedIn={this.props.loggedIn} />
+          <PrivateRoute path="/dashboard" component={Dashboard} loginStatus={this.props.loginStatus} />
+          <PrivateRoute path="/home" component={Home} loginStatus={this.props.loginStatus} />
         </Switch>
       </div>
     );

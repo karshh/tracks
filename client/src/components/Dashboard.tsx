@@ -9,9 +9,6 @@ type UserProps = UserStore.UserState & typeof UserStore.actionCreators
 
 class Dashboard extends Component<UserProps> {
 
-  componentDidMount() {
-    console.log(this.props.loggedIn);
-  }
   getChart = () => {
     return [
       {

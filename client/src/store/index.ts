@@ -1,6 +1,4 @@
 import * as User from './User';
-import configureStore from './configureStore';
-import { createStore } from 'redux';
 
 // The top-level state object
 export interface ApplicationState {

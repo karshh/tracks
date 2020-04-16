@@ -1,20 +1,28 @@
 import React, { Component } from 'react';
 import { Nav, Navbar } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import NavBarOptions from './NavBarOptions'
 
 
 
 export class NavBar extends Component {
+  
+  navBarProps = {
+    linkStyle: {
+      padding: '5px',
+      display: 'inline-block',
+    }
+  }
+
   render() {
+
     return (
       <Navbar bg="light" expand="lg">
-        <Navbar.Brand><Link to="/">Tracks</Link></Navbar.Brand>
+        <Navbar.Brand><Link style={this.navBarProps.linkStyle} to="/">Tracks</Link></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav>
-            <Link to='/home'>Home</Link>
-            <Link to='/dashboard'>Dashboard</Link>
-            <Link to='/login'>Login</Link>
+          <Nav className="ml-auto">
+            <NavBarOptions { ...this.navBarProps } />
           </Nav>
         </Navbar.Collapse>
       </Navbar>

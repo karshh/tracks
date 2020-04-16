@@ -1,8 +1,16 @@
 import { Reducer } from 'redux';
+import axios from 'axios';
 
+
+export enum LoginStatus {
+  LoggedIn,
+  LoggingIn,
+  LoggingOut,
+  LoggedOut
+}
 
 export interface UserState {
-  loggedIn: boolean
+  loginStatus: LoginStatus
   name?: string
   karma?: string
   last_action?: { status: string, relative: string }
@@ -28,19 +36,22 @@ export interface ResponseUserLogout {
 
 type Action = RequestUserLogin | RequestUserLogout | ResponseUserLogin | ResponseUserLogout
 
-export const URL = `https://api.torn.com/user/`
+export const URL = `https://api.torn.com/`
 
 export const actionCreators = {
 
-  login: (key: string) => (dispatch: any) => {
+  login: (key: string) => (dispatch: any, getState: any) => {
     dispatch({ type: 'REQUEST_USER_LOGIN' });
-    dispatch({ type: 'RESPONSE_USER_LOGIN', payload: {name: 'KARSH'} });
+    axios.get(URL + `user/login`, {
+      params: { key }
+    }).then((response: any) => {
+      if (!response.data.error) dispatch({ type: 'RESPONSE_USER_LOGIN', payload: response.data })
+    });
+  },
 
-    // axios.get(`user/login`, {
-    //   params: { key }
-    // }).then((response: any) => {
-    //   if (!response.error) dispatch({ type: 'RESPONSE_USER_LOGIN', response })
-    // });
+  logout: () => (dispatch: any, getState: any) => {
+    dispatch({ type: 'REQUEST_USER_LOGOUT' });
+    return setTimeout(() => dispatch({ type: 'RESPONSE_USER_LOGOUT' }), 1000);
   }
 }
 
@@ -48,16 +59,17 @@ export const actionCreators = {
 
 export const reducer: Reducer<UserState> = (state: UserState | undefined, incomingAction: Action): UserState => {
   if (state === undefined) {
-    return { loggedIn: false, name: 'NOT LOGGED IN!' }
+    return { loginStatus: LoginStatus.LoggedOut, name: 'NOT LOGGED IN!' }
   }
   console.log(incomingAction);
   switch (incomingAction.type) {
     case 'REQUEST_USER_LOGIN':
+      return { loginStatus: LoginStatus.LoggingIn }
     case 'REQUEST_USER_LOGOUT':
-      return state
+      return { loginStatus: LoginStatus.LoggingOut }
     case 'RESPONSE_USER_LOGIN':
-      return { loggedIn: true, ...incomingAction.payload }
+      return { loginStatus: LoginStatus.LoggedIn, ...incomingAction.payload }
     case 'RESPONSE_USER_LOGOUT':
-      return { loggedIn: true }
+      return { loginStatus: LoginStatus.LoggedOut }
   }
 }
