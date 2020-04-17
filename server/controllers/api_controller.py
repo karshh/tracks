@@ -7,10 +7,7 @@ api = Blueprint('api', __name__)
 @api.route('/')
 def get():
     
-    factionId = request.args.get('id')
-    from_date = request.args.get('from')
-    to_date = request.args.get('to')
-    types = request.args.get('types')
+    factionId = request.args.get('ID')
 
     factionList = []
     if factionId is not None: factionList = factionId.split(',')

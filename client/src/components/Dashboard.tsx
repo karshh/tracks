@@ -3,33 +3,48 @@ import React from 'react';
 import { ApplicationState } from '../store';
 import * as UserStore from '../store/User'
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import Plot from 'react-plotly.js';
+import axios from 'axios';
 
 type UserProps = UserStore.UserState & typeof UserStore.actionCreators 
 
-class Dashboard extends Component<UserProps> {
+class Dashboard extends Component<UserProps, { loaded: boolean, chartData: any }> {
 
-  getChart = () => {
-    return [
-      {
-        "ID": 37498,
-        "name": "The Railroad",
-        "respect": 267150,
-        "timestamp": "2020-03-28T23:28:52"
-      },
-      {
-        "ID": 37498,
-        "name": "The Railroad",
-        "respect": 267150,
-        "timestamp": "2020-03-28T23:29:00"
-      },
-      {
-        "ID": 37498,
-        "name": "The Railroad",
-        "respect": 267150,
-        "timestamp": "2020-03-28T23:29:10"
-      }
-    ]
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      loaded: false,
+      chartData: null
+    }
+  }
+
+  getBasicData() {
+    axios.get(process.env.REACT_APP_SERVER_URL + 'api?ID=40774').then((result: any) => {
+      let data: Array<any> = result.data;
+      let x = data.map((value) => value.timestamp);
+      let y = data.map((value) => value.respect);
+      let title = "";
+      if (data.length > 0) title = `${data[0].name} [${data[0].ID}] respect`
+
+      this.setState({
+        loaded: true,
+        chartData: {
+          layout: { width: 1000, height: 500, title },
+          data: [
+            {
+              x, y, type: 'scatter', mode: 'lines+markers', marker: { color: 'red' }
+            }
+          ]
+        }
+      })
+    });
+  }
+
+  renderChart() {
+    return this.state.loaded ? <Plot layout={this.state.chartData.layout} data={this.state.chartData.data} /> : null 
+  }
+  componentDidMount() {
+    this.getBasicData();
   }
   render() {
     return (
@@ -37,7 +52,7 @@ class Dashboard extends Component<UserProps> {
         <p>Welcome, {this.props.name}!</p>
 
         <p>Check out this lovely data!</p>
-        <pre>{JSON.stringify(this.getChart(), null, 2)}</pre>
+        { this.renderChart() }
       </div>
     )
   }
