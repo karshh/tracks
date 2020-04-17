@@ -4,17 +4,12 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '../store';
 import { Link } from 'react-router-dom';
 
-type NavBarProps = UserStore.UserState & typeof UserStore.actionCreators & { linkStyle: {padding: string, display: string} }
+type NavBarProps = UserStore.UserState & typeof UserStore.actionCreators & { history: any, linkStyle: {padding: string, display: string} }
 
 class NavBarOptions extends Component<NavBarProps, {}> {
   
   
-  buttonClicked = (event: any) => {
-    console.log(event.target.id);
-
-    if(event.target.id === 'Logout') this.props.logout();
-    event.preventDefault();
-  }
+  buttonClicked = (event: any) => event.target.id === 'Logout' && this.props.logout();
 
   getLinks = (links: Array<any>) => {
     return links.map((x) => <Link onClick={this.buttonClicked} key={x.to} id={x.name} style={this.props.linkStyle} to={x.to}>{x.name}</Link>)

@@ -36,15 +36,13 @@ export interface ResponseUserLogout {
 
 type Action = RequestUserLogin | RequestUserLogout | ResponseUserLogin | ResponseUserLogout
 
-export const URL = `https://api.torn.com/`
-
+const URL = process.env.REACT_APP_SERVER_URL;
 export const actionCreators = {
 
   login: (key: string) => (dispatch: any, getState: any) => {
     dispatch({ type: 'REQUEST_USER_LOGIN' });
-    axios.get(URL + `user/login`, {
-      params: { key }
-    }).then((response: any) => {
+    
+    axios.post(URL + `auth/`, { key }).then((response: any) => {
       if (!response.data.error) dispatch({ type: 'RESPONSE_USER_LOGIN', payload: response.data })
     });
   },

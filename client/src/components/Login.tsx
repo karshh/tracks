@@ -32,7 +32,7 @@ class Login extends Component<LoginProps, LoginState> {
 
   render() {
     
-    if (this.props.loginStatus == UserStore.LoginStatus.LoggedIn) {
+    if (this.props.loginStatus === UserStore.LoginStatus.LoggedIn) {
       return <Redirect to="/home" />;
     }
     return (
